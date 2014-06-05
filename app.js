@@ -25,14 +25,13 @@ var PBKDF2_ITERATIONS       = process.env.PBKDF2_ITERATIONS || 1000;
 var PBKDF2_KEY_LENGTH       = process.env.PBKDF2_KEY_LENGTH || 16;
 
 // Libraries
-var redis_url   = require("url").parse(REDIS_URL);
-var db          = redis.createClient(redis_url.port, redis_url.hostname);
+var redis_url = require("url").parse(REDIS_URL);
+var db = redis.createClient(redis_url.port, redis_url.hostname);
 if (redis_url.auth) {
   db.auth(redis_url.auth.split(":")[1]); 
 }
 
 var sendgrid    = require('sendgrid')(SMTP_USERNAME, SMTP_PASSWORD);
-
 var port        = parseInt(process.env.PORT) || 3000;
 var Hapi        = require('hapi');
 server          = new Hapi.Server(+port, '0.0.0.0', { cors: true });
