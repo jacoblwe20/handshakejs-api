@@ -18,7 +18,7 @@ DataAdapter.prototype.auth = function ( creds ) {
 };
 
 DataAdapter.prototype.appExsist = function ( appName, callback ) {
-    this.db.EXSIST.apply( appName, callback );
+    this.db.EXSIST( appName, callback );
 };
 
 DataAdapter.prototype.addApp = function ( app, callback ) {
