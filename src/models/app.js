@@ -18,9 +18,8 @@ function App (options){
   this.handshake = options.handshake;
   this._validator = new this.handshake.Validator();
   this.appName = this.handshake.sanitize( options.appName );
-  this.email = this.handshake.sanitize( options.email );
-  this.salt = options.salt || crypto.randomBytes( options.saltLength ).toString('hex');
-  this.dataAdapter = options.dataAdapter;
+  this.salt = options.salt || crypto.randomBytes( this.handshake.saltLength ).toString('hex');
+  this.dataAdapter = this.handshake.dataAdapter;
 
   return this;
 }
@@ -28,7 +27,6 @@ function App (options){
 App.prototype.toJson = function(  ) {
   return {
     email: this.email,
-    appName: this.appName,
     salt: this.salt
   };
 };
@@ -45,9 +43,6 @@ App.prototype.create = function( callback ){
 
   var error;
 
-  this._validator
-    .check(this.email, 'Invalid email.')
-    .isEmail();
   this._validator
     .check(this.app_name, 'App_name must be alphanumeric, underscore, or dashes.')
     .is(/^[a-z0-9\_\-]+$/);
@@ -70,13 +65,18 @@ App.prototype.create = function( callback ){
   return this;
 };
 
-App.prototype._handleAppExsist = function ( callback, err ) {
+App.prototype._handleAppExsist = function ( callback, err, res ) {
   if ( err ) {
     return callback( err );
   }
   if ( this.checkApdapter( ) ) {
     return callback( new Error( 'Your "dataAdapter" is improperly configured' ));
   }
+  // just make this once
+  if ( res ) {
+    return callback( null, this );
+  }
+
   this.dataAdapter.addApp( this.toJson(), this._handleAppCreate.bind( this, callback ) );
 };
 

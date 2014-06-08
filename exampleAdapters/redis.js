@@ -5,7 +5,7 @@ var redis = require('redis'),
     url = require("url");
 
 function DataAdapter ( url ) {
-    this.url = url;
+    this.url = url || "redis://localhost:6379";
     this._url = url.parse( url );
     this.db = redis.createClient( this.url.port, this.url.hostname );
     if ( this._url.auth ) {

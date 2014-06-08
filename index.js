@@ -2,7 +2,7 @@
 
 'use strict';
 
-var Validator = require('./validator'),
+var Validator = require('validator'),
   sanitize = Validator.sanitize,
   EventEmitter = require('events').EventEmitter,
   util = require('util');
@@ -21,6 +21,10 @@ function Index ( options ) {
   this.pbkdf2Iterations = options.pbkdf2Iterations || 1000;
   this.pbkdf2KeyLength = options.pbkdf2KeyLength || 16;
   this.authcodeExpire = options.authcodeExpire || 120000;
+  this.paths = {
+    request : options.requestUrl || '/handshake/--/request',
+    confirm : options.requestUrl || '/handshake/--/confirm'
+  };
 
   // adapters ( data, transports )
   if( !options.dataAdapter ) {
@@ -41,6 +45,18 @@ function Index ( options ) {
   // models
   this.App = require('./src/models/app');
   this.Identity = require('./src/models/identity');
+
+  this.app = new this.App({
+    salt: options.salt,
+    appName: options.appName,
+    handshake: this
+  });
+  // only creates if needed
+  this.app.create(function( err ){
+    if ( err ) {
+      this.emit('error', err);
+    }
+  });
 
 }
 

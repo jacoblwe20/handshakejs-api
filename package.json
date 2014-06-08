@@ -9,6 +9,7 @@
   "description": "Email only authentication",
   "dependencies": {
     "validator": "1.5.1",
-    "redis": "~0.10.3"
+    "redis": "~0.10.3",
+    "sendgrid": "~1.0.5"
   }
 }
