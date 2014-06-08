@@ -7,9 +7,7 @@
 
 module.exports = App;
 
-var Validator = require('./validator'),
-  sanitize = Validator.sanitize,
-  crypto = require('crypto');
+var crypto = require('crypto');
 
 /* app model */
 
@@ -17,9 +15,10 @@ function App (options){
   
   options = options || {};
 
-  this._validator = new Validator();
-  this.appName = sanitize( options.appName ).trim().toLowerCase() || '';
-  this.email = sanitize( options.email ).trim().toLowerCase() || '';
+  this.handshake = options.handshake;
+  this._validator = new this.handshake.Validator();
+  this.appName = this.handshake.sanitize( options.appName );
+  this.email = this.handshake.sanitize( options.email );
   this.salt = options.salt || crypto.randomBytes( options.saltLength ).toString('hex');
   this.dataAdapter = options.dataAdapter;
 
@@ -38,8 +37,7 @@ App.prototype.checkApdapter = function ( ) {
   return !(
     this.dataAdapter && 
     typeof this.dataAdapter.appExsist === 'function' &&
-    typeof this.dataAdapter.addApp === 'function' &&
-    typeof this.dataAdapter.addKey === 'function'
+    typeof this.dataAdapter.addApp === 'function'
   );
 };
 
@@ -86,5 +84,7 @@ App.prototype._handleAppCreate = function ( callback, err ) {
   if ( err ) {
     return callback( err );
   }
+  // for analytics
+  this.handshake.emit( 'create:app', this.appName );
   callback( null, this );
 };

@@ -14,17 +14,39 @@ function DataAdapter ( url ) {
 }
 
 DataAdapter.prototype.auth = function ( creds ) {
+    // check if this is standard
     this.db.auth( creds.split(':')[1] );
 };
 
 DataAdapter.prototype.appExsist = function ( appName, callback ) {
-    this.db.EXSIST( appName, callback );
+    this.db.EXSIST( 'apps/' + appName, callback );
+};
+
+DataAdapter.prototype.identityExsist = function ( identity, callback ) {
+    this.db.EXSIST( 'apps/' + identity.appName + '/identities/' + identity.email, callback );
 };
 
 DataAdapter.prototype.addApp = function ( app, callback ) {
-    this.db.SADD( 'apps', app.name );
-    this.db.HMSET( 'apps/' + app.name, app, function ( err ) {
+    this.db.SADD( 'apps', app.appName );
+    this.db.HMSET( 'apps/' + app.appName, app, function ( err ) {
         callback( err, app );
     });
 };
 
+DataAdapter.prototype.addIdentity = function ( identity, callback ) {
+    var key = 'apps/' + identity.appName;
+    this.db.SADD( key + '/identities',  identity.email );
+    this.db.HMSET( key + '/identities/' + identity.email, identity, callback);
+};
+
+DataAdapter.prototype.getApp = function ( appName, callback ) {
+    this.db.HGETALL( 'apps/' + appName, callback );
+};
+
+DataAdapter.prototype.getIdentity = function ( identity, callback ) {
+    this.db.HGETALL( 'apps/' + identity.appName + '/identities/' + identity.email, callback );
+};
+
+DataAdapter.prototype.clearAuthcode = function ( identity ) {
+    this.db.HMSET( 'apps/' + identity.appName + '/identities/' + identity.email, 'authcode', '');
+};
