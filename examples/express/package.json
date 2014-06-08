@@ -1,0 +1,15 @@
+{
+  "name": "express-example-handshake",
+  "version": "0.0.0",
+  "description": "just a demo app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jacob Lowe",
+  "license": "MIT",
+  "dependencies": {
+    "express": "~4.4.1",
+    "dotenv": "~0.2.8"
+  }
+}
